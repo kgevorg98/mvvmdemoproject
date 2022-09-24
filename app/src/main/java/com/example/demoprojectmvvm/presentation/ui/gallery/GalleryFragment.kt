@@ -5,12 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.demoprojectmvvm.R
+import com.bekawestberg.loopinglayout.library.LoopingLayoutManager
 import com.example.demoprojectmvvm.databinding.FragmentGalleryBinding
-import com.example.demoprojectmvvm.presentation.ui.gallery.adapter.AlbumAdapter
+import com.example.demoprojectmvvm.presentation.ui.gallery.adapter.AlbumGenericAdapter
 import com.example.demoprojectmvvm.presentation.utils.observeInLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
@@ -20,18 +17,14 @@ class GalleryFragment : Fragment() {
     private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
     private val viewModel: GalleryViewModel by viewModel()
-    private val albumAdapter = AlbumAdapter()
+    private lateinit var albumAdapter: AlbumGenericAdapter
 
     private fun onEach() {
         onEach(viewModel.getAlbums) {
             it?.let { albums ->
-                albumAdapter.submitList(albums)
-            }
-        }
-
-        onEach(viewModel.getPhotos) {
-            it?.let { photos ->
-                albumAdapter.photos.addAll(photos)
+                albumAdapter =
+                    AlbumGenericAdapter(albums, viewModel.getPhotos.value?.toList() ?: emptyList())
+                initRecycler()
             }
         }
     }
@@ -53,9 +46,9 @@ class GalleryFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initRecycler()
         onEach()
 
+        viewModel.getPhotos()
     }
 
     override fun onDestroyView() {
@@ -63,19 +56,17 @@ class GalleryFragment : Fragment() {
         _binding = null
     }
 
-
     private fun initRecycler() {
         with(binding) {
-            albums.run {
+            albumsRv.run {
                 context?.let { context ->
                     adapter = albumAdapter
                     layoutManager =
-                        LinearLayoutManager(
+                        LoopingLayoutManager(
                             context,
-                            LinearLayoutManager.VERTICAL,
+                            LoopingLayoutManager.VERTICAL,
                             false
                         )
-                        
                 }
             }
         }

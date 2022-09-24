@@ -31,12 +31,6 @@ class GalleryViewModel(
     }
     val getPhotos = _getPhotos.asStateFlow()
 
-    init {
-        getPhotos()
-
-    }
-
-
     private fun getAlbums() = viewModelScope.launch {
         getAlbumsInteractor().onEach { result ->
             when (result) {
@@ -53,7 +47,7 @@ class GalleryViewModel(
         }.launchIn(this)
     }
 
-    private fun getPhotos() = viewModelScope.launch {
+    fun getPhotos() = viewModelScope.launch {
         getPhotosInteractor().onEach { result ->
             when (result) {
                 is Result.Success -> {

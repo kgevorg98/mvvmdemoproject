@@ -82,6 +82,10 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
 
-    
+    //Looping Layout
+    implementation 'com.github.beksomega:loopinglayout:0.4.1'
+
+
+
 
 }
